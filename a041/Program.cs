@@ -35,7 +35,7 @@ namespace a041
             Console.WriteLine(gestioneOrario.stampaClassi()+"\n");
 
             Console.WriteLine("Tripla Necessità:");
-            Console.WriteLine(triplaNecessita.stampaNecessita()+"\n");
+            Console.WriteLine(triplaNecessita.StampaNecessita()+"\n");
 
 
             Console.WriteLine("Premi un tasto...");

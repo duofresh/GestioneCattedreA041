@@ -11,20 +11,20 @@ namespace a041.Model
             this.gestioneOrario = gestioneOrario;
         }
 
-        public string stampaNecessita()
+        public string StampaNecessita()
         {
             StringBuilder result = new StringBuilder();
-
             foreach (var classe in gestioneOrario.Classi)
             {
-                result.AppendLine($"Classe: {classe.ToString()}");
-                foreach (var disciplina in gestioneOrario.Discipline)
+                result.AppendLine($"Classe {classe.ToString()}: ");
+                
+                var orePerDisciplina = classe.GetOrePerDisciplina();
+                foreach (var disciplina in orePerDisciplina)
                 {
-                    if (classe.ToString().Contains(disciplina.trovaDisciplina(disciplina.Codice)))
-                    {
-                        result.AppendLine($"  Disciplina: {disciplina.trovaDisciplina(disciplina.Codice)} - Ore: {classe.GetOreTotali()}");
-                    }
+                    result.AppendLine($"{disciplina.Key} {disciplina.Value} ore");
                 }
+
+                result.AppendLine();
             }
 
             return result.ToString();

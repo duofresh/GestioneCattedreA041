@@ -1,20 +1,24 @@
-﻿namespace a041.Model
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace a041.Model
 {
     public class Classe
     {
         private StreamReader scanner;
-        private int oreTotali;
-        private string Nome { get; set; }
+        private Dictionary<string, int> orePerDisciplina;
+        public string Nome { get; private set; }
 
         public Classe(string nome)
         {
             Nome = nome;
-            oreTotali = 0;
+            orePerDisciplina = new Dictionary<string, int>();
         }
 
         public override string ToString()
         {
-            return $"{Nome} ha {oreTotali} Ore";
+            return Nome;
         }
 
         public void calcolaOre(string path)
@@ -26,7 +30,7 @@
 
             try
             {
-                scanner = new StreamReader(path); 
+                scanner = new StreamReader(path);
                 string file = scanner.ReadLine();
                 string[] materie;
 
@@ -36,7 +40,17 @@
                     
                     if (materie.Length >= 3 && materie[1] == Nome[0].ToString())
                     {
-                        oreTotali += int.Parse(materie[2]);
+                        string disciplina = materie[0];
+                        int ore = int.Parse(materie[2]);
+                        
+                        if (orePerDisciplina.ContainsKey(disciplina))
+                        {
+                            orePerDisciplina[disciplina] += ore;
+                        }
+                        else
+                        {
+                            orePerDisciplina[disciplina] = ore;
+                        }
                     }
 
                     file = scanner.ReadLine();
@@ -48,8 +62,13 @@
             }
             finally
             {
-                scanner?.Close(); // chiudi lo streamreader .. rip memoria
+                scanner?.Close();
             }
+        }
+        
+        public Dictionary<string, int> GetOrePerDisciplina()
+        {
+            return orePerDisciplina;
         }
     }
 }

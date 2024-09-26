@@ -2,11 +2,11 @@
 
 public class Disciplina
 {
-    private string Codice {get; set;}
+    internal string Codice {get; set;}
     private string Name {get; set;}
    
     private int Classe {get; set;}
-    private int Ore {get; set;}
+    internal int Ore {get; set;}
     
 
     public Disciplina(string s, int parse, int i)

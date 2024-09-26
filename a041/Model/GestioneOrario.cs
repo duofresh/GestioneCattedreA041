@@ -4,9 +4,9 @@ namespace a041.Model
 {
     public class GestioneOrario
     {
-        private List<Disciplina> Discipline { get; set; }
-        private List<Docente> Docenti { get; set; }
-        private List<Classe> Classi { get; set; } 
+        internal List<Disciplina> Discipline { get; set; }
+        internal List<Docente> Docenti { get; set; }
+        internal List<Classe> Classi { get; set; } 
 
         public GestioneOrario(string pathdiscipline, string pathdocenti, string pathclassi)
         {
