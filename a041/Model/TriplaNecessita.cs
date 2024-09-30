@@ -14,8 +14,7 @@ namespace a041.Model
             this.gestioneOrario = gestioneOrario;
             assegnazioneProfessori = new Dictionary<string, string>();
         }
-
-	public string StampaNecessita()
+        public string StampaNecessita()
         {
             StringBuilder result = new StringBuilder();
             foreach (var classe in gestioneOrario.Classi)
@@ -33,7 +32,7 @@ namespace a041.Model
             return result.ToString();
         }
 
-
+        // Metodo per avviare l'assegnazione dei professori
         public string AssegnaProf(int index)
         {
             if (index >= gestioneOrario.Classi.Count)
@@ -44,11 +43,11 @@ namespace a041.Model
             Classe currentClass = gestioneOrario.Classi[index];
             StringBuilder assegnazioni = new StringBuilder();
 
-            // Prova ad assegnare professori alle discipline per la classe corrente
-            if (AssegnaProfessoriPerClasse(currentClass, 0, new HashSet<string>()))
-            {
-                assegnazioni.AppendLine($"Classe {currentClass.Nome}:");
+            assegnazioni.AppendLine($"Classe {currentClass.Nome}:");
 
+            // Prova ad assegnare professori alle discipline per la classe corrente
+            if (AssegnaProfessoriPerClasse(currentClass))
+            {
                 foreach (var disciplina in currentClass.GetOrePerDisciplina().Keys)
                 {
                     if (assegnazioneProfessori.ContainsKey(disciplina))
@@ -58,7 +57,7 @@ namespace a041.Model
                     }
                 }
 
-                // Ricorsione: Passa alla classe successiva
+                // Ricorsione per assegnare professori alla classe successiva
                 assegnazioni.Append(AssegnaProf(index + 1));
             }
             else
@@ -69,40 +68,40 @@ namespace a041.Model
             return assegnazioni.ToString();
         }
 
-        private bool AssegnaProfessoriPerClasse(Classe currentClass, int disciplinaIndex, HashSet<string> professoriUsati)
+        // Metodo per assegnare professori ad una singola classe
+        private bool AssegnaProfessoriPerClasse(Classe currentClass)
         {
+            // Reset delle assegnazioni per ogni nuova classe
+            assegnazioneProfessori.Clear();
+            HashSet<string> professoriUsati = new HashSet<string>();
+
             var discipline = new List<string>(currentClass.GetOrePerDisciplina().Keys);
 
-            if (disciplinaIndex >= discipline.Count)
+            foreach (var disciplina in discipline)
             {
-                return true; // Tutte le materie sono state assegnate
-            }
+                bool assegnato = false;
 
-            string currentDisciplina = discipline[disciplinaIndex];
-
-            foreach (var docente in gestioneOrario.Docenti)
-            {
-                // Verifica se il docente non è già assegnato a questa materia o è già stato assegnato a questa classe
-                if (!professoriUsati.Contains(docente.Nome) && !assegnazioneProfessori.ContainsKey(currentDisciplina))
+                foreach (var docente in gestioneOrario.Docenti)
                 {
-                    // Assegna il docente alla materia
-                    assegnazioneProfessori[currentDisciplina] = docente.Nome;
-                    professoriUsati.Add(docente.Nome);
-
-                    // Ricorsione per la materia successiva
-                    if (AssegnaProfessoriPerClasse(currentClass, disciplinaIndex + 1, professoriUsati))
+                    // Verifica se il professore non è già stato assegnato alla materia o alla classe corrente
+                    if (!professoriUsati.Contains(docente.Nome) && !assegnazioneProfessori.ContainsKey(disciplina))
                     {
-                        return true;
+                        // Assegna il professore alla materia
+                        assegnazioneProfessori[disciplina] = docente.Nome;
+                        professoriUsati.Add(docente.Nome);
+                        assegnato = true;
+                        break;
                     }
+                }
 
-                    // Se non ha funzionato, rimuovi l'assegnazione e riprova con un altro professore
-                    assegnazioneProfessori.Remove(currentDisciplina);
-                    professoriUsati.Remove(docente.Nome);
+                // Se non riusciamo ad assegnare un professore alla materia corrente, fallisce
+                if (!assegnato)
+                {
+                    return false;
                 }
             }
 
-            // Se nessun professore è stato trovato per questa materia, torna false
-            return false;
+            return true;
         }
     }
 }
