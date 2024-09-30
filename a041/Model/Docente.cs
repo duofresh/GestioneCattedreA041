@@ -2,7 +2,7 @@
 
 public class Docente
 {
-    private string Nome {  get; set; }
+    internal string Nome {  get; set; }
     private int Ore { get; set; }
 
     public Docente()

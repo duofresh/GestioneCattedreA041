@@ -20,7 +20,7 @@ namespace a041
             }
             
             GestioneOrario gestioneOrario = new GestioneOrario(pathDiscipline, pathDocenti, pathClassi);
-            TriplaNecessita triplaNecessita = new TriplaNecessita(gestioneOrario, GestioneOrario.getDocenti());
+            TriplaNecessita triplaNecessita = new TriplaNecessita(gestioneOrario);
             
 
             Console.WriteLine("Discipline:");
