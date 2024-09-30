@@ -32,7 +32,7 @@ namespace a041.Model
         }
         public string AssegnaProf()
         {
-            return null;
+            return "";
         }
     }
 }
