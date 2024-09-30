@@ -15,7 +15,7 @@ namespace a041.Model
             assegnazioneProfessori = new Dictionary<string, string>();
         }
 
-	 public string StampaNecessita()
+	public string StampaNecessita()
         {
             StringBuilder result = new StringBuilder();
             foreach (var classe in gestioneOrario.Classi)
@@ -32,6 +32,8 @@ namespace a041.Model
             }
             return result.ToString();
         }
+
+
         public string AssegnaProf(int index)
         {
             if (index >= gestioneOrario.Classi.Count)
@@ -41,16 +43,19 @@ namespace a041.Model
 
             Classe currentClass = gestioneOrario.Classi[index];
             StringBuilder assegnazioni = new StringBuilder();
-            
+
             // Prova ad assegnare professori alle discipline per la classe corrente
-            if (AssegnaProfessoriPerClasse(currentClass, 0))
+            if (AssegnaProfessoriPerClasse(currentClass, 0, new HashSet<string>()))
             {
                 assegnazioni.AppendLine($"Classe {currentClass.Nome}:");
 
                 foreach (var disciplina in currentClass.GetOrePerDisciplina().Keys)
                 {
-                    string prof = assegnazioneProfessori[disciplina];
-                    assegnazioni.AppendLine($"{disciplina}: {prof}");
+                    if (assegnazioneProfessori.ContainsKey(disciplina))
+                    {
+                        string prof = assegnazioneProfessori[disciplina];
+                        assegnazioni.AppendLine($"{disciplina}: {prof}");
+                    }
                 }
 
                 // Ricorsione: Passa alla classe successiva
@@ -64,7 +69,7 @@ namespace a041.Model
             return assegnazioni.ToString();
         }
 
-        private bool AssegnaProfessoriPerClasse(Classe currentClass, int disciplinaIndex)
+        private bool AssegnaProfessoriPerClasse(Classe currentClass, int disciplinaIndex, HashSet<string> professoriUsati)
         {
             var discipline = new List<string>(currentClass.GetOrePerDisciplina().Keys);
 
@@ -77,21 +82,22 @@ namespace a041.Model
 
             foreach (var docente in gestioneOrario.Docenti)
             {
-                // Verifica se il docente non è già assegnato a questa materia
-                if (!assegnazioneProfessori.ContainsKey(currentDisciplina) &&
-                    !assegnazioneProfessori.ContainsValue(docente.Nome))
+                // Verifica se il docente non è già assegnato a questa materia o è già stato assegnato a questa classe
+                if (!professoriUsati.Contains(docente.Nome) && !assegnazioneProfessori.ContainsKey(currentDisciplina))
                 {
                     // Assegna il docente alla materia
                     assegnazioneProfessori[currentDisciplina] = docente.Nome;
+                    professoriUsati.Add(docente.Nome);
 
                     // Ricorsione per la materia successiva
-                    if (AssegnaProfessoriPerClasse(currentClass, disciplinaIndex + 1))
+                    if (AssegnaProfessoriPerClasse(currentClass, disciplinaIndex + 1, professoriUsati))
                     {
                         return true;
                     }
 
                     // Se non ha funzionato, rimuovi l'assegnazione e riprova con un altro professore
                     assegnazioneProfessori.Remove(currentDisciplina);
+                    professoriUsati.Remove(docente.Nome);
                 }
             }
 
