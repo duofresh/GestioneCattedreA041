@@ -8,13 +8,21 @@ namespace a041.Model
     {
         private GestioneOrario gestioneOrario;
         private Dictionary<string, string> assegnazioneProfessori; // Mappa materia -> professore
+        private Dictionary<string, int> oreProfessoriDisponibili;  // Mappa professore -> ore disponibili
 
         public TriplaNecessita(GestioneOrario gestioneOrario)
         {
             this.gestioneOrario = gestioneOrario;
             assegnazioneProfessori = new Dictionary<string, string>();
+            oreProfessoriDisponibili = new Dictionary<string, int>();
+
+            // Inizializza le ore disponibili per ogni professore
+            foreach (var docente in gestioneOrario.Docenti)
+            {
+                oreProfessoriDisponibili[docente.Nome] = docente.Ore;
+            }
         }
-        public string StampaNecessita()
+	public string StampaNecessita()
         {
             StringBuilder result = new StringBuilder();
             foreach (var classe in gestioneOrario.Classi)
@@ -48,12 +56,13 @@ namespace a041.Model
             // Prova ad assegnare professori alle discipline per la classe corrente
             if (AssegnaProfessoriPerClasse(currentClass))
             {
-                foreach (var disciplina in currentClass.GetOrePerDisciplina().Keys)
+                foreach (var disciplina in currentClass.GetOrePerDisciplina())
                 {
-                    if (assegnazioneProfessori.ContainsKey(disciplina))
+                    string materia = disciplina.Key;
+                    if (assegnazioneProfessori.ContainsKey(materia))
                     {
-                        string prof = assegnazioneProfessori[disciplina];
-                        assegnazioni.AppendLine($"{disciplina}: {prof}");
+                        string prof = assegnazioneProfessori[materia];
+                        assegnazioni.AppendLine($"{materia}: {prof} - {disciplina.Value} ore");
                     }
                 }
 
@@ -73,22 +82,22 @@ namespace a041.Model
         {
             // Reset delle assegnazioni per ogni nuova classe
             assegnazioneProfessori.Clear();
-            HashSet<string> professoriUsati = new HashSet<string>();
 
-            var discipline = new List<string>(currentClass.GetOrePerDisciplina().Keys);
+            var discipline = currentClass.GetOrePerDisciplina();
 
-            foreach (var disciplina in discipline)
+            foreach (var materia in discipline.Keys)
             {
                 bool assegnato = false;
+                int oreMateria = discipline[materia]; // Ore necessarie per la materia
 
                 foreach (var docente in gestioneOrario.Docenti)
                 {
-                    // Verifica se il professore non è già stato assegnato alla materia o alla classe corrente
-                    if (!professoriUsati.Contains(docente.Nome) && !assegnazioneProfessori.ContainsKey(disciplina))
+                    // Verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
+                    if (oreProfessoriDisponibili[docente.Nome] >= oreMateria && !assegnazioneProfessori.ContainsKey(materia))
                     {
                         // Assegna il professore alla materia
-                        assegnazioneProfessori[disciplina] = docente.Nome;
-                        professoriUsati.Add(docente.Nome);
+                        assegnazioneProfessori[materia] = docente.Nome;
+                        oreProfessoriDisponibili[docente.Nome] -= oreMateria;  // Scala le ore del professore
                         assegnato = true;
                         break;
                     }
