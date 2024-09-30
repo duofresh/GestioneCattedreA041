@@ -5,10 +5,12 @@ namespace a041.Model
     public class TriplaNecessita
     {
         private GestioneOrario gestioneOrario;
+        private List<Docente> Docenti { get; set; }
 
-        public TriplaNecessita(GestioneOrario gestioneOrario)
+        public TriplaNecessita(GestioneOrario gestioneOrario, List<Docente> docenti)
         {
             this.gestioneOrario = gestioneOrario;
+            Docenti = docenti;
         }
 
         public string StampaNecessita()
@@ -26,8 +28,11 @@ namespace a041.Model
 
                 result.AppendLine();
             }
-
             return result.ToString();
+        }
+        public string AssegnaProf()
+        {
+            return null;
         }
     }
 }
