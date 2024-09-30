@@ -38,7 +38,7 @@ namespace a041
             Console.WriteLine(triplaNecessita.StampaNecessita()+"\n");
             
             Console.WriteLine("Assegnazione Docenti:");
-            Console.WriteLine(triplaNecessita.AssegnaProf()+"\n");
+            Console.WriteLine(triplaNecessita.AssegnaProf(0)+"\n");
 
             Console.WriteLine("Premi un tasto...");
             Console.ReadKey();

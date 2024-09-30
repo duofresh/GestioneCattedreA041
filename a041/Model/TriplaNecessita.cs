@@ -30,8 +30,12 @@ namespace a041.Model
             }
             return result.ToString();
         }
-        public string AssegnaProf()
+        public string AssegnaProf(int index)
         {
+            
+            
+            
+            
             return "";
         }
     }
