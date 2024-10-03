@@ -19,8 +19,8 @@ namespace a041.Model
             oreProfessoriDisponibili = new Dictionary<string, int>();
             classiAssegnate = new HashSet<string>();
 
-            // Inizializza le ore disponibili per ogni professore
-            foreach (var docente in gestioneOrario.Docenti)
+            
+            foreach (var docente in gestioneOrario.Docenti)     //ore disponibili per ogni professore
             {
                 oreProfessoriDisponibili[docente.Nome] = docente.Ore;
             }
@@ -44,7 +44,7 @@ namespace a041.Model
             return result.ToString();
         }
 
-        // Metodo per avviare l'assegnazione dei professori
+        // metodo per avviare l'assegnazione dei professori
         public string AssegnaProf(int index)
         {
             if (index >= gestioneOrario.Classi.Count)
@@ -56,9 +56,8 @@ namespace a041.Model
             StringBuilder assegnazioni = new StringBuilder();
 
             assegnazioni.AppendLine($"Classe {currentClass.Nome}:");
-
-            // Prova ad assegnare professori alle discipline per la classe corrente
-            if (AssegnaProfessoriPerClasse(currentClass))
+            
+            if (AssegnaProfessoriPerClasse(currentClass))   // prova ad assegnare professori alle discipline per la classe corrente
             {
                 foreach (var disciplina in currentClass.GetOrePerDisciplina())
                 {
@@ -70,7 +69,7 @@ namespace a041.Model
                     }
                 }
 
-                // Ricorsione per assegnare professori alla classe successiva
+                // ricorsione per assegnare professori alla classe successiva
                 assegnazioni.Append(AssegnaProf(index + 1));
             }
             else
@@ -81,10 +80,10 @@ namespace a041.Model
             return assegnazioni.ToString();
         }
 
-        // Metodo per assegnare professori ad una singola classe
+        // metodo per assegnare professori ad una singola classe
         private bool AssegnaProfessoriPerClasse(Classe currentClass)
         {
-            // Reset delle assegnazioni per ogni nuova classe
+            // reset delle assegnazioni per ogni nuova classe
             assegnazioneProfessori.Clear();
 
             var discipline = currentClass.GetOrePerDisciplina();
@@ -92,19 +91,18 @@ namespace a041.Model
             foreach (var materia in discipline.Keys)
             {
                 bool assegnato = false;
-                int oreMateria = discipline[materia]; // Ore necessarie per la materia
-
-                // Ordina i professori in base alle ore disponibili, per distribuire equamente
-                var professoriOrdinati = gestioneOrario.Docenti
-                    .OrderByDescending(docente => oreProfessoriDisponibili[docente.Nome])
-                    .ToList();
+                int oreMateria = discipline[materia]; // ore necessarie per la materia
+                
+                var professoriOrdinati = gestioneOrario.Docenti                 //
+                    .OrderByDescending(docente => oreProfessoriDisponibili[docente.Nome])   // ordina i professori in base alle ore disponibili, per distribuire equamente
+                    .ToList();                                                              //
 
                 foreach (var docente in professoriOrdinati)
                 {
-                    // Verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
+                    // verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
                     if (oreProfessoriDisponibili[docente.Nome] >= oreMateria && !assegnazioneProfessori.ContainsKey(materia))
                     {
-                        // Assegna il professore alla materia
+                        // assegna
                         assegnazioneProfessori[materia] = docente.Nome;
                         oreProfessoriDisponibili[docente.Nome] -= oreMateria;  // Scala le ore del professore
                         assegnato = true;
@@ -112,7 +110,7 @@ namespace a041.Model
                     }
                 }
 
-                // Se non riusciamo ad assegnare un professore alla materia corrente, fallisce
+                // fine loop se fallisce
                 if (!assegnato)
                 {
                     return false;
