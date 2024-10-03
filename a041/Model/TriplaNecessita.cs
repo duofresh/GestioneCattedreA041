@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,8 @@ namespace a041.Model
                 oreProfessoriDisponibili[docente.Nome] = docente.Ore;
             }
         }
+
+
 	public string StampaNecessita()
         {
             StringBuilder result = new StringBuilder();
@@ -90,6 +93,7 @@ namespace a041.Model
                 bool assegnato = false;
                 int oreMateria = discipline[materia]; // Ore necessarie per la materia
 
+                // Ordina i professori in base alle ore disponibili in modo da assegnare prima chi ha più ore
                 foreach (var docente in gestioneOrario.Docenti)
                 {
                     // Verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
