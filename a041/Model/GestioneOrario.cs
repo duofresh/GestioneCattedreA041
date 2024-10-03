@@ -60,12 +60,15 @@ namespace a041.Model
             while ((line = sr.ReadLine()) != null)
             {
                 info = line.Split(";");
-                for (int i = 0; i < info.Length; i+=2)
+                for (int i = 0; i < info.Length; i++)
                 {
-                    string nomeClasse = info[i];
-                    Classe classe = new Classe(nomeClasse);
-                    classe.calcolaOre(pathdiscipline);
-                    Classi.Add(classe);
+                    if (info[i] != ";")
+                    {
+                        string nomeClasse = info[i];
+                        Classe classe = new Classe(nomeClasse);
+                        classe.calcolaOre(pathdiscipline);
+                        Classi.Add(classe); 
+                    }
                 }
             }
         }
