@@ -1,7 +1,7 @@
-
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace a041.Model
 {
@@ -10,12 +10,14 @@ namespace a041.Model
         private GestioneOrario gestioneOrario;
         private Dictionary<string, string> assegnazioneProfessori; // Mappa materia -> professore
         private Dictionary<string, int> oreProfessoriDisponibili;  // Mappa professore -> ore disponibili
+        private HashSet<string> classiAssegnate; // Traccia delle classi già assegnate
 
         public TriplaNecessita(GestioneOrario gestioneOrario)
         {
             this.gestioneOrario = gestioneOrario;
             assegnazioneProfessori = new Dictionary<string, string>();
             oreProfessoriDisponibili = new Dictionary<string, int>();
+            classiAssegnate = new HashSet<string>();
 
             // Inizializza le ore disponibili per ogni professore
             foreach (var docente in gestioneOrario.Docenti)
@@ -23,7 +25,6 @@ namespace a041.Model
                 oreProfessoriDisponibili[docente.Nome] = docente.Ore;
             }
         }
-
 
 	public string StampaNecessita()
         {
@@ -93,8 +94,12 @@ namespace a041.Model
                 bool assegnato = false;
                 int oreMateria = discipline[materia]; // Ore necessarie per la materia
 
-                // Ordina i professori in base alle ore disponibili in modo da assegnare prima chi ha più ore
-                foreach (var docente in gestioneOrario.Docenti)
+                // Ordina i professori in base alle ore disponibili, per distribuire equamente
+                var professoriOrdinati = gestioneOrario.Docenti
+                    .OrderByDescending(docente => oreProfessoriDisponibili[docente.Nome])
+                    .ToList();
+
+                foreach (var docente in professoriOrdinati)
                 {
                     // Verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
                     if (oreProfessoriDisponibili[docente.Nome] >= oreMateria && !assegnazioneProfessori.ContainsKey(materia))
