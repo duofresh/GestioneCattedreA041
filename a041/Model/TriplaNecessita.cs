@@ -92,10 +92,11 @@ namespace a041.Model
             {
                 bool assegnato = false;
                 int oreMateria = discipline[materia]; // ore necessarie per la materia
-                
-                var professoriOrdinati = gestioneOrario.Docenti                 //
+        
+                var professoriOrdinati = gestioneOrario.Docenti
+                    .Where(docente => docente.Nome != "Supplente1" && docente.Nome != "Supplente2")  // Esclude i supplenti
                     .OrderByDescending(docente => oreProfessoriDisponibili[docente.Nome])   // ordina i professori in base alle ore disponibili, per distribuire equamente
-                    .ToList();                                                              //
+                    .ToList();
 
                 foreach (var docente in professoriOrdinati)
                 {
