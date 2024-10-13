@@ -18,12 +18,6 @@ namespace a041.Model
             assegnazioneProfessori = new Dictionary<string, string>();
             oreProfessoriDisponibili = new Dictionary<string, int>();
             classiAssegnate = new HashSet<string>();
-
-            
-            foreach (var docente in gestioneOrario.Docenti)     //ore disponibili per ogni professore
-            {
-                oreProfessoriDisponibili[docente.Nome] = docente.Ore;
-            }
         }
 
 	public string StampaNecessita()
@@ -74,7 +68,8 @@ namespace a041.Model
             }
             else
             {
-                assegnazioni.AppendLine($"Assegnazione fallita per la classe {currentClass.Nome}");
+                AssegnaProf(0);
+                //assegnazioni.AppendLine($"Assegnazione fallita per la classe {currentClass.Nome}");
             }
 
             return assegnazioni.ToString();
@@ -85,6 +80,11 @@ namespace a041.Model
         {
             // reset delle assegnazioni per ogni nuova classe
             assegnazioneProfessori.Clear();
+            oreProfessoriDisponibili.Clear();
+            foreach (var docente in gestioneOrario.Docenti)     //ore disponibili per ogni professore
+            {
+                oreProfessoriDisponibili[docente.Nome] = docente.Ore;
+            }
 
             var discipline = currentClass.GetOrePerDisciplina();
 
@@ -92,13 +92,12 @@ namespace a041.Model
             {
                 bool assegnato = false;
                 int oreMateria = discipline[materia]; // ore necessarie per la materia
-        
-                var professoriOrdinati = gestioneOrario.Docenti
-                    //.Where(docente => docente.Nome != "Supplente1" && docente.Nome != "Supplente2")  // Esclude i supplenti
-                    .OrderByDescending(docente => oreProfessoriDisponibili[docente.Nome])   // ordina i professori in base alle ore disponibili, per distribuire equamente
-                    .ToList();
 
-                foreach (var docente in professoriOrdinati)
+                var prof = gestioneOrario.getDocenti();
+                    //.OrderByDescending(docente => oreProfessoriDisponibili[docente.Nome])   // ordina i professori in base alle ore disponibili, per distribuire equamente
+                    //.ToList();
+
+                /*foreach (var docente in professoriOrdinati)
                 {
                     // verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
                     if (oreProfessoriDisponibili[docente.Nome] >= oreMateria && !assegnazioneProfessori.ContainsKey(materia))
@@ -106,6 +105,21 @@ namespace a041.Model
                         // assegna
                         assegnazioneProfessori[materia] = docente.Nome;
                         oreProfessoriDisponibili[docente.Nome] -= oreMateria;  // Scala le ore del professore
+                        assegnato = true;
+                        break;
+                    }
+                }*/
+                int j = 0;
+                Random random = new Random();
+                for (int i = 0; i < prof.Count; i++)
+                {
+                    j = random.Next(prof.Count);
+                    // verifica se il professore ha abbastanza ore disponibili e non è già stato assegnato alla materia
+                    if (oreProfessoriDisponibili[prof[j].Nome] >= oreMateria && !assegnazioneProfessori.ContainsKey(materia))
+                    {
+                        // assegna
+                        assegnazioneProfessori[materia] = prof[j].Nome;
+                        oreProfessoriDisponibili[prof[j].Nome] -= oreMateria;  // Scala le ore del professore
                         assegnato = true;
                         break;
                     }
